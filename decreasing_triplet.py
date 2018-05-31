@@ -1,5 +1,3 @@
-
-
 def decreasing_triplet_chain(l):
   """
   Given an integer array A, is there a triple i,j,k s.t. i < j < k AND
