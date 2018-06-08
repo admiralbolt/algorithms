@@ -20,3 +20,8 @@ def change_count(coins, value):
       current_coin = counts[i][j - coins[i]] if j - coins[i] >= 0 else 0
       counts[i][j] = prev_coin + current_coin
   return counts[i][j]
+
+if __name__ == "__main__":
+  value = int(input().split()[0])
+  coins = list(map(int, input().rstrip().split()))
+  print(change_count(coins, value))
