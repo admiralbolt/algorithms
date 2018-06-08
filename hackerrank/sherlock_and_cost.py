@@ -1,3 +1,5 @@
+# https://www.hackerrank.com/challenges/sherlock-and-cost/problem
+
 import math
 import os
 

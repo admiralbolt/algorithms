@@ -4,6 +4,8 @@ from scipy.special import comb
 s = [0]
 f = [0]
 
+# https://www.hackerrank.com/challenges/counting-road-networks/problem
+# https://oeis.org/A001187
 def compute_f(n):
   sub = 0
   for k in range(1, n):

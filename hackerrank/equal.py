@@ -1,4 +1,5 @@
 # https://www.hackerrank.com/challenges/equal/problem
+
 import os
 
 def get_diff_ops(start, target):
