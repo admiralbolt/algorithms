@@ -11,6 +11,7 @@
 import math
 
 # Brute force solution.
+# Time complexity is O(2^n * n^2)
 def max_shade(umbrellas):
   total_shade = 0
   for mask in mask_gen(len(umbrellas)):
