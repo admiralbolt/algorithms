@@ -22,6 +22,9 @@ def get_alphabet(words):
         break
   return top_sort(letter_orders)
 
+
+# Assuming all of this is implemented for you.
+
 class Graph:
 
   nodes = set()
@@ -42,5 +45,4 @@ class Graph:
 
 
 def top_sort(graph):
-  # Okay to assume that this is implemented.
   return
