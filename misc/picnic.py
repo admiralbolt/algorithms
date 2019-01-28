@@ -1,12 +1,14 @@
-# You are having a company picnic on the hottest day of the year. Thankfully,
-# you will have umbrellas to provide you with shade. The tables and umbrellas
-# are bolted to the ground (can't be stealing company property) so you can
-# only choose to raise or lower umbrellas. Two umbrellas cannot both be raised
-# if they overlap with each other at any point. What is the maximum amount
-# of shade you can provide?
-#
-# The input will be an array of tuples (x, y, r) where (x, y) are the
-# coordinates of the center of the table, and r is the radius of the umbrella.
+"""
+You are having a company picnic on the hottest day of the year. Thankfully,
+you will have umbrellas to provide you with shade. The tables and umbrellas
+are bolted to the ground (can't be stealing company property) so you can
+only choose to raise or lower umbrellas. Two umbrellas cannot both be raised
+if they overlap with each other at any point. What is the maximum amount
+of shade you can provide?
+
+The input will be an array of tuples (x, y, r) where (x, y) are the
+coordinates of the center of the table, and r is the radius of the umbrella.
+"""
 
 import math
 
