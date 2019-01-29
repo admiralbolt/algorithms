@@ -1,3 +1,10 @@
+import math
+from mpmath import mp
+
+mp.dps = 500
+# Golden ratio stuff.
+phi = (1 + mp.sqrt(5)) / 2
+phi_prime = (1 - mp.sqrt(5)) / 2
 
 def gaussian_sum(x):
   """Returns the gaussian sum of x."""
@@ -15,3 +22,6 @@ def fib(x):
   for i in range(2, x):
     fib_numbers.append(fib_numbers[i - 2] + fib_numbers[i - 1])
   return fib_numbers
+
+def fib_discrete(n):
+  return round((mp.power(phi, n) - mp.power(phi_prime, n)) / mp.sqrt(5))
