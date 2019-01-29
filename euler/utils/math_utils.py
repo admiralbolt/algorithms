@@ -10,6 +10,10 @@ def gaussian_sum(x):
   """Returns the gaussian sum of x."""
   return x * (x + 1) / 2
 
+def sum_of_squares(x):
+  """Returns the sum of squares up to x inclusive."""
+  return round((1 / 3) * mp.power(x, 3) + (1 / 2) * mp.power(x, 2) + (1 / 6) * x)
+
 def fib(x):
   """Returns the list of fibonnaci numbers with x iterations."""
   if x == 0:
