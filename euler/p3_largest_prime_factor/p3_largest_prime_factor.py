@@ -28,9 +28,7 @@ def prime_factors_brute(n, max_iter=1000000):
         power += 1
         remainder = remainder / number
       powers.append(power)
-      print("Remainder: %s. Prime: %s. Power: %s." % (remainder, number, power))
     number += 1
-  print()
   return primes, powers
 
 if __name__ == "__main__":
