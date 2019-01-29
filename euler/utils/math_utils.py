@@ -29,3 +29,11 @@ def fib(x):
 
 def fib_discrete(n):
   return round((mp.power(phi, n) - mp.power(phi_prime, n)) / mp.sqrt(5))
+
+def is_prime_slow(n, primes):
+  for prime in primes:
+    if prime > math.floor(math.sqrt(n) + 1):
+      break
+    if n % prime == 0:
+      return False
+  return True
