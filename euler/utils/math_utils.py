@@ -37,3 +37,23 @@ def is_prime_slow(n, primes):
     if n % prime == 0:
       return False
   return True
+
+def prime_factors_brute(n, max_iter=1000000):
+  primes = []
+  powers = []
+  remainder = n
+  number = 2
+  while remainder != 1:
+    if number > max_iter:
+      break
+    if remainder % number == 0:
+      primes.append(number)
+      power = 1
+      remainder = remainder / number
+      # Keep trying the same number until it stops dividing.
+      while remainder % number == 0:
+        power += 1
+        remainder = remainder / number
+      powers.append(power)
+    number += 1
+  return primes, powers
