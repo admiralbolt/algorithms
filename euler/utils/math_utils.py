@@ -57,3 +57,25 @@ def prime_factors_brute(n, max_iter=1000000):
       powers.append(power)
     number += 1
   return primes, powers
+
+def eval_prime_factorized(primes, powers):
+  result = 1
+  for prime, power in zip(primes, powers):
+    result *= prime ** power
+  return result
+
+def get_sum_divisors(primes, powers):
+  individual_sums = []
+  for prime, power in zip(primes, powers):
+    isum = 1
+    for i in range(1, power + 1):
+      isum += prime ** i
+    individual_sums.append(isum)
+  # Finally, multiply together all the results.
+  result = 1
+  for isum in individual_sums:
+    result *= isum
+  return result
+
+def get_sum_proper_divisors(primes, powers):
+  return get_sum_divisors(primes, powers) - eval_prime_factorized(primes, powers)
