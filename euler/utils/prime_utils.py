@@ -1,3 +1,5 @@
+import argparse
+
 import glob
 import os
 import pickle
@@ -54,3 +56,9 @@ def load_primes(max_number = None, number_of_primes = None, file_prefix="primes"
           "number_of_primes: %s. Returning max instead." % (max_number, number_of_primes))
   with open(max_prime_file, "rb") as rh:
     return pickle.load(rh)
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="Generate some mo-fuckin primes.")
+  parser.add_argument("--num", default=1000000, type=int, help="Max value of number to consider.")
+  args = parser.parse_args()
+  generate_primes(args.num)
