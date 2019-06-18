@@ -78,3 +78,6 @@ def get_sum_divisors(primes, powers):
 
 def get_sum_proper_divisors(primes, powers):
   return get_sum_divisors(primes, powers) - eval_prime_factorized(primes, powers)
+
+def concat(a, b):
+  return int(str(a) + str(b))
