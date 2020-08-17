@@ -59,14 +59,15 @@ class Trie:
         node = TrieNode(
           value=word[i],
           name=node_name,
-          parent=self.nodes.get(word[:i]),
           output=(i == word_len - 1)
         )
 
-        if node.parent.name == self.root.name:
+        parent_name = word[:i]
+
+        if parent_name == self.root.name:
           node.suffix_node = self.root
         else:
-          node.suffix_node = self.get_longest_strict_suffix(node.parent, node.value)
+          node.suffix_node = self.get_longest_strict_suffix(self.nodes[parent_name], node.value)
           node.output_node = node.suffix_node if node.suffix_node.output else node.suffix_node.output_node
 
         self.nodes[node_name] = node
@@ -134,14 +135,13 @@ class Trie:
 
 class TrieNode:
 
-  __slots__ = ("name", "value", "output", "parent", "output_node", "suffix_node")
+  __slots__ = ("name", "value", "output", "output_node", "suffix_node")
 
-  def __init__(self, value=None, name=None, parent=None, output=False):
+  def __init__(self, value=None, name=None,  output=False):
     self.name = name
     self.value = value
     # Determines if this is an output keyword.
     self.output = output
-    self.parent = parent
     # Edges for outputs & longest strict suffixes.
     self.output_node = None
     self.suffix_node = None
