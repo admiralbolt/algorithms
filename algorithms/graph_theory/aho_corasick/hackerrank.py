@@ -13,20 +13,24 @@ def time_it(title):
   print(f"{title} time: {time.time() - start_time}")
   start_time = time.time()
 
+def get_gene_value(health_values, gene, first, last):
+  if gene not in health_values:
+    return 0
 
-def get_health(genes, health, first, last, d, trie):
-    keywords = set()
-    health_dict = collections.defaultdict(int)
-    for i in range(first, last + 1):
-        gene = genes[i]
-        keywords.add(gene)
-        health_dict[gene] += health[i]
+  value = 0
+  for index, worth in health_values[gene]:
+    if index >= first and index <= last:
+      value += worth
+  return value
 
+
+
+def get_health(health_values, first, last, d, trie):
     occurrences = trie.get_occurrences(d)
     # Score occurrences
     total_score = 0
     for gene, number in occurrences.items():
-        total_score += health_dict[gene] * number
+        total_score += get_gene_value(health_values, gene, first, last) * number
     return total_score
 
 
@@ -38,19 +42,25 @@ if __name__ == '__main__':
 
     health = list(map(int, input().rstrip().split()))
 
-    s = int(input())
+    health_values = collections.defaultdict(list)
+    for i, gene in enumerate(genes):
+      health_values[gene].append((i, health[i]))
 
-    health_values = []
+
+    s = int(input())
 
     g = list(set(genes))
 
     start_time = time.time()
+    print(f"warmup: {start_time - true_start}")
 
     trie = Trie()
     time_it("trie2 init")
     trie.construct(g)
     time_it("total construction")
 
+    min_health = 100000000000000000000000
+    max_health = -1
     for s_itr in range(s):
         firstLastd = input().split()
 
@@ -60,7 +70,11 @@ if __name__ == '__main__':
 
         d = firstLastd[2]
 
-        health_values.append(get_health(genes, health, first, last, d, trie))
+        health = get_health(health_values, first, last, d, trie)
+        if health > max_health:
+          max_health = health
+        if health < min_health:
+          min_health = health
 
-    print(min(health_values), max(health_values))
+    print(min_health, max_health)
     print(f"GRAND TOTAL: {time.time() - true_start}")

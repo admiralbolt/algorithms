@@ -18,8 +18,6 @@ class Trie:
     self.nodes = {}
     self.nodes[""] = TrieNode(value="", name="")
     self.root = self.nodes[""]
-    # self.get_longest_strict_suffix = functools.lru_cache(maxsize=None)(self.get_longest_strict_suffix)
-    self.cache = {}
     return
 
   def add_node(self, node=None):
@@ -31,8 +29,6 @@ class Trie:
   def get_longest_strict_suffix(self, node, letter):
     target_node = node.suffix_node
     target_name = f"{target_node.name}{letter}"
-    if target_name in self.cache:
-      return self.cache[target_name]
 
     if target_name in self.nodes:
       return self.nodes[target_name]
@@ -41,7 +37,6 @@ class Trie:
       target_node = target_node.suffix_node
       target_name = f"{target_node.name}{letter}"
       if target_name in self.nodes:
-        self.cache[target_name] = self.nodes[target_name]
         return self.nodes[target_name]
     return self.root
 
