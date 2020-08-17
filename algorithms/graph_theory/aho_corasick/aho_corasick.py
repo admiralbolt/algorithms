@@ -4,6 +4,12 @@ for string matching.
 
 All of this, for 50 hacker rank points.
 SMH
+
+I want to point out that this code was very nice looking at some point.
+And now it is garbage. Will probably try to cleanup the old version and do
+some performance improvements at some point.
+
+The amount of optimization required for it to work on hackerrank are ridiculous.
 """
 import collections
 import time
@@ -13,20 +19,25 @@ class Trie:
 
   def __init__(self):
     self.nodes = {}
-    self.nodes[""] = TrieNode(name="")
-    self.root = self.nodes[""]
+    self.root = ["", False, None, None]
+    # self.root = {
+    #   "name": "",
+    #   "output": False,
+    #   "output_node": None
+    # }
+    self.nodes[""] = self.root
     return
 
   def get_longest_strict_suffix(self, node, letter):
-    target_node = node.suffix_node
-    target_name = f"{target_node.name}{letter}"
+    target_node = node[2]
+    target_name = f"{target_node[0]}{letter}"
 
     if target_name in self.nodes:
       return self.nodes[target_name]
 
-    while target_node.name != self.root.name:
-      target_node = target_node.suffix_node
-      target_name = f"{target_node.name}{letter}"
+    while target_node[0]:
+      target_node = target_node[2]
+      target_name = f"{target_node[0]}{letter}"
       if target_name in self.nodes:
         return self.nodes[target_name]
 
@@ -51,17 +62,25 @@ class Trie:
         if node_name in self.nodes:
           continue
 
-        node = TrieNode(
-          name=node_name,
-          output=(i == word_len - 1)
-        )
+        # Nodes are [name, output, suffix, output_node]
+        node = [node_name, i == word_len - 1]
+
+        # node = {
+        #   "name": node_name,
+        #   "output": (i == word_len - 1),
+        #   "output_node": None
+        # }
 
         parent_name = word[:i]
-        if parent_name == self.root.name:
-          node.suffix_node = self.root
+        if not parent_name:
+          # node["suffix_node"] = self.root
+          node.append(self.root)
+          node.append(None)
         else:
-          node.suffix_node = self.get_longest_strict_suffix(self.nodes[parent_name], word[i])
-          node.output_node = node.suffix_node if node.suffix_node.output else node.suffix_node.output_node
+          node.append(self.get_longest_strict_suffix(self.nodes[parent_name], word[i]))
+          node.append(node[2] if node[2][1] else node[2][3])
+          # node["suffix_node"] = self.get_longest_strict_suffix(self.nodes[parent_name], word[i])
+          # node["output_node"] = node["suffix_node"] if node["suffix_node"]["output"] else node["suffix_node"]["output_node"]
 
         self.nodes[node_name] = node
     return
@@ -71,7 +90,7 @@ class Trie:
     current_node = self.root
     occurrences = collections.defaultdict(int)
     for letter in search:
-      target_name = f"{current_node.name}{letter}"
+      target_name = f"{current_node[0]}{letter}"
       # If the node exists we want to update occurences.
       # We need to follow all output links and update
       # the occurences for those as well.
@@ -81,45 +100,20 @@ class Trie:
         continue
 
 
-      if current_node == self.root:
+      if not current_node[0]:
         continue
 
       current_node = self.get_longest_strict_suffix(current_node, letter)
-      if current_node != self.root:
+      if current_node[0]:
         self.count(occurrences, current_node)
     return occurrences
 
   def count(self, occurrences, current_node):
-    if current_node.output:
-      occurrences[current_node.name] += 1
-    if current_node.output_node:
+    if current_node[1]:
+      occurrences[current_node[0]] += 1
+    if current_node[3]:
       tmp = current_node
-      while tmp.output_node:
-        occurrences[tmp.output_node.name] += 1
-        tmp = tmp.output_node
+      while tmp[3]:
+        occurrences[tmp[3][0]] += 1
+        tmp = tmp[3]
     return
-
-
-
-
-class TrieNode:
-
-  __slots__ = ("name", "output", "output_node", "suffix_node")
-
-  def __init__(self, name=None, output=False):
-    self.name = name
-    # Determines if this is an output keyword.
-    self.output = output
-    # Edges for outputs & longest strict suffixes.
-    self.output_node = None
-    self.suffix_node = None
-    return
-
-  def __repr__(self):
-    return self.name
-
-  def __eq__(self, obj):
-    return self.name == obj.name
-
-  def __hash__(self):
-    return hash(self.name)
