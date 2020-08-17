@@ -41,10 +41,15 @@ class Trie:
       word_length.append(l)
       if l > max_length:
         max_length = l
+
+    start = 0
+    end = len(sorted_keywords)
     for i in range(max_length):
-      for j, word in enumerate(sorted_keywords):
+      for j in range(start, end):
+        word = sorted_keywords[j]
         word_len = word_length[j]
         if i >= word_len:
+          start += 1
           continue
 
         node_name = word[:i+1]
