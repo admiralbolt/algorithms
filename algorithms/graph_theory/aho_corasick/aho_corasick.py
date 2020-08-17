@@ -8,7 +8,6 @@ SMH
 import collections
 import time
 
-from graphviz import Digraph
 
 class Trie:
 
@@ -18,10 +17,6 @@ class Trie:
     self.root = self.nodes[""]
     return
 
-  def add_node(self, node=None):
-    """Adds a node to the trie."""
-    return
-
   def get_longest_strict_suffix(self, node, letter):
     target_node = node.suffix_node
     target_name = f"{target_node.name}{letter}"
@@ -29,7 +24,7 @@ class Trie:
     if target_name in self.nodes:
       return self.nodes[target_name]
 
-    while target_node != self.root:
+    while target_node.name != self.root.name:
       target_node = target_node.suffix_node
       target_name = f"{target_node.name}{letter}"
       if target_name in self.nodes:
@@ -38,18 +33,12 @@ class Trie:
     return self.root
 
   def construct(self, keywords):
-    sorted_keywords = sorted(keywords)
-    word_length = []
-    max_length = 0
-    for word in sorted_keywords:
-      l = len(word)
-      word_length.append(l)
-      if l > max_length:
-        max_length = l
+    max_length = max([len(word) for word in keywords])
     for i in range(max_length):
-      for j, word in enumerate(sorted_keywords):
-        word_len = word_length[j]
-        if i >= word_len:
+      for word in keywords:
+        try:
+          word[i]
+        except KeyError:
           continue
 
         node_name = word[:i+1]
@@ -60,21 +49,22 @@ class Trie:
           value=word[i],
           name=node_name,
           parent=self.nodes.get(word[:i]),
-          output=(i == word_len - 1)
+          output=(word[i] == word[-1])
         )
 
-        if node.parent == self.root:
+        if node.parent.name == self.root.name:
           node.suffix_node = self.root
         else:
           node.suffix_node = self.get_longest_strict_suffix(node.parent, node.value)
           node.output_node = node.suffix_node if node.suffix_node.output else node.suffix_node.output_node
 
-        self.nodes[node.name] = node
-        node.parent.children.add(node)
+        self.nodes[node_name] = node
     return
 
   def render(self, fname):
     """Renders the trie to a graphviz diagram."""
+    # Putting the import here so I can copy paste into hackerrank easily.
+    from graphviz import Digraph
     d = Digraph()
     for name, node in self.nodes.items():
       if node.output:
@@ -133,7 +123,7 @@ class Trie:
 
 class TrieNode:
 
-  __slots__ = ("name", "value", "output", "parent", "children", "output_node", "suffix_node")
+  __slots__ = ("name", "value", "output", "parent", "output_node", "suffix_node")
 
   def __init__(self, value=None, name=None, parent=None, output=False):
     self.name = name
@@ -141,7 +131,6 @@ class TrieNode:
     # Determines if this is an output keyword.
     self.output = output
     self.parent = parent
-    self.children = set()
     # Edges for outputs & longest strict suffixes.
     self.output_node = None
     self.suffix_node = None

@@ -13,12 +13,17 @@ GRAND TOTAL: 11.12623643875122
 INPUT33
 =======
 
-NOCACHE
--------
-trie2 init time: 1.6450881958007812e-05
-total construction time: 4.479281425476074
-11674463 11674463
-GRAND TOTAL: 6.135579824447632
+warmup: 0.15894031524658203
+trie2 init time: 6.532669067382812e-05
+total construction time: 5.41740870475769
+0 7353994
+GRAND TOTAL: 5.730339288711548
+
+warmup: 0.14467263221740723
+trie2 init time: 5.7220458984375e-05
+total construction time: 5.130284309387207
+0 7353994
+GRAND TOTAL: 5.47948431968689   
 
 
 
@@ -50,5 +55,5 @@ trie2 init time: 6.365776062011719e-05
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
   1261350    1.031    0.000    1.031    0.000 {method 'encode' of 'str' objects}
   1261350    1.189    0.000    1.189    0.000 {method 'get' of 'dict' objects}
-  1261350    1.299    0.000    1.299    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}   
+  1261350    1.299    0.000    1.299    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
 """
