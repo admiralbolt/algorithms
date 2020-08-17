@@ -65,8 +65,8 @@ if __name__ == '__main__':
 
     trie = Trie()
     time_it("trie2 init")
-    # cProfile.run('trie.construct(genes)')
-    # sys.exit()
+    cProfile.run('trie.construct(genes)')
+    sys.exit()
     trie.construct(genes)
     time_it("total construction")
 
