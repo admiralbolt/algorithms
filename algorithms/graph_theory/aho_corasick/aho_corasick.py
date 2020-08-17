@@ -6,9 +6,7 @@ All of this, for 50 hacker rank points.
 SMH
 """
 import collections
-import functools
-import hashlib
-import queue
+import time
 
 from graphviz import Digraph
 
@@ -22,8 +20,6 @@ class Trie:
 
   def add_node(self, node=None):
     """Adds a node to the trie."""
-    self.nodes[node.name] = node
-    node.parent.add_child(node)
     return
 
   def get_longest_strict_suffix(self, node, letter):
@@ -38,14 +34,17 @@ class Trie:
       target_name = f"{target_node.name}{letter}"
       if target_name in self.nodes:
         return self.nodes[target_name]
+
     return self.root
 
   def construct(self, keywords):
-    max_length = max([len(word) for word in keywords])
+    a = time.time()
+    word_length = [len(word) for word in keywords]
+    max_length = max(word_length)
     sorted_keywords = sorted(keywords)
     for i in range(max_length):
-      for word in sorted_keywords:
-        word_len = len(word)
+      for j, word in enumerate(sorted_keywords):
+        word_len = word_length[j]
         if i >= word_len:
           continue
 
@@ -66,7 +65,8 @@ class Trie:
           node.suffix_node = self.get_longest_strict_suffix(node.parent, node.value)
           node.output_node = node.suffix_node if node.suffix_node.output else node.suffix_node.output_node
 
-        self.add_node(node)
+        self.nodes[node.name] = node
+        node.parent.children.add(node)
     return
 
   def render(self, fname):
@@ -129,6 +129,8 @@ class Trie:
 
 class TrieNode:
 
+  __slots__ = ("name", "value", "output", "parent", "children", "output_node", "suffix_node")
+
   def __init__(self, value=None, name=None, parent=None, output=False):
     self.name = name
     self.value = value
@@ -148,14 +150,4 @@ class TrieNode:
     return self.name == obj.name
 
   def __hash__(self):
-    return int(hashlib.sha1(self.name.encode("utf-8")).hexdigest(), 16) % (10 ** 8)
-
-  def add_child(self, node):
-    """Add the passed in node as a child to the current node."""
-    self.children.add(node)
-
-  def get_child_with_value(self, value):
-    for child in self.children:
-      if child.value == value:
-        return child
-    return None
+    return hash(self.name)

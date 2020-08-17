@@ -5,6 +5,8 @@ import re
 import sys
 import time
 
+import cProfile
+
 from aho_corasick import *
 
 start_time = time.time()
@@ -49,14 +51,14 @@ if __name__ == '__main__':
 
     s = int(input())
 
-    g = list(set(genes))
-
     start_time = time.time()
     print(f"warmup: {start_time - true_start}")
 
     trie = Trie()
     time_it("trie2 init")
-    trie.construct(g)
+    # cProfile.run('trie.construct(genes)')
+    # sys.exit()
+    trie.construct(genes)
     time_it("total construction")
 
     min_health = 100000000000000000000000
