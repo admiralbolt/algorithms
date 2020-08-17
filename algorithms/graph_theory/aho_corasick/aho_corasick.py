@@ -38,10 +38,14 @@ class Trie:
     return self.root
 
   def construct(self, keywords):
-    a = time.time()
-    word_length = [len(word) for word in keywords]
-    max_length = max(word_length)
     sorted_keywords = sorted(keywords)
+    word_length = []
+    max_length = 0
+    for word in sorted_keywords:
+      l = len(word)
+      word_length.append(l)
+      if l > max_length:
+        max_length = l
     for i in range(max_length):
       for j, word in enumerate(sorted_keywords):
         word_len = word_length[j]
