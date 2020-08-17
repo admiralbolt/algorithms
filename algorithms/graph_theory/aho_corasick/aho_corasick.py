@@ -18,100 +18,60 @@ class Trie:
     self.nodes = {}
     self.nodes[""] = TrieNode(value="", name="")
     self.root = self.nodes[""]
+    # self.get_longest_strict_suffix = functools.lru_cache(maxsize=None)(self.get_longest_strict_suffix)
+    self.cache = {}
     return
 
-  def add_node(self, parent=None, node=None):
+  def add_node(self, node=None):
     """Adds a node to the trie."""
-    if node.name in self.nodes:
-      # We can potential process out of order, and need to update
-      # the output value accordinly.
-      if node.output:
-        self.nodes[node.name].output = True
-      return
-    if parent not in self.nodes:
-      parent = ""
     self.nodes[node.name] = node
-    self.nodes[parent].add_child(node)
+    node.parent.add_child(node)
     return
 
-  @functools.lru_cache(maxsize=None)
   def get_longest_strict_suffix(self, node, letter):
-    """
-    yield node.suffix_node
-    if node.suffix_node != self.nodes[""] and node.suffix_node is not None:
-      yield from self.follow_suffixes(node.suffix_node)
-    """
-    target_node = node
+    target_node = node.suffix_node
+    target_name = f"{target_node.name}{letter}"
+    if target_name in self.cache:
+      return self.cache[target_name]
+
+    if target_name in self.nodes:
+      return self.nodes[target_name]
+
     while target_node != self.root:
+      target_node = target_node.suffix_node
       target_name = f"{target_node.name}{letter}"
       if target_name in self.nodes:
+        self.cache[target_name] = self.nodes[target_name]
         return self.nodes[target_name]
-      target_node = target_node.suffix_node
     return self.root
 
-  def add_suffix_links(self):
-    """Constructs suffix links."""
-    for child in self.bfs(self.root):
-      if child.parent == self.root:
-        child.suffix_node = self.root
-        continue
+  def construct(self, keywords):
+    max_length = max([len(word) for word in keywords])
+    sorted_keywords = sorted(keywords)
+    for i in range(max_length):
+      for word in sorted_keywords:
+        word_len = len(word)
+        if i >= word_len:
+          continue
 
-      # Check the suffix link of the parent...
-      for suffix_node in self.follow_suffixes(child.parent):
-        target = f"{suffix_node.name}{child.value}"
-        if target in self.nodes:
-          child.suffix_node = self.nodes[target]
-          break
-      if not child.suffix_node:
-        child.suffix_node = self.root
-    return
+        node_name = word[:i+1]
+        if node_name in self.nodes:
+          continue
 
-  def add_output_links(self):
-    """Construct output links."""
-    for node in self.nodes.values():
-      if node == self.root:
-        continue
-
-      for suffix_node in self.follow_suffixes(node):
-        if suffix_node.output:
-          node.output_node = suffix_node
-          break
-    return
-
-  def bfs(self, node):
-    """Do a breadth-first search starting from a node."""
-    q = queue.Queue()
-    q.put(node)
-
-    while q.qsize() > 0:
-      current_node = q.get()
-      if current_node != self.root:
-        yield current_node
-
-      for child in current_node.children:
-        q.put(child)
-
-  def follow_suffixes(self, node):
-    yield node.suffix_node
-    if node.suffix_node != self.nodes[""] and node.suffix_node is not None:
-      yield from self.follow_suffixes(node.suffix_node)
-
-  def parse_keywords(self, keywords):
-    """Convert keywords into a trie."""
-    for word in keywords:
-      last_index = len(word) - 1
-      parent = ""
-      for i, letter in enumerate(word):
-        self.add_node(
-          parent=parent,
-          node=TrieNode(
-            value=letter,
-            name=parent + letter,
-            parent=self.nodes.get(parent, self.nodes[""]),
-            output=(i == last_index)
-          )
+        node = TrieNode(
+          value=word[i],
+          name=node_name,
+          parent=self.nodes.get(word[:i]),
+          output=(i == word_len - 1)
         )
-        parent += letter
+
+        if node.parent == self.root:
+          node.suffix_node = self.root
+        else:
+          node.suffix_node = self.get_longest_strict_suffix(node.parent, node.value)
+          node.output_node = node.suffix_node if node.suffix_node.output else node.suffix_node.output_node
+
+        self.add_node(node)
     return
 
   def render(self, fname):
@@ -154,20 +114,9 @@ class Trie:
       if current_node == self.root:
         continue
 
-      found = False
-      # Follow suffix nodes attempting to save as much context as we can.
-      for suffix_node in self.follow_suffixes(current_node):
-        target_name = f"{suffix_node.name}{letter}"
-        # Same as before, if we find a node update the current node and count.
-        if target_name in self.nodes:
-          found = True
-          current_node = self.nodes[target_name]
-          self.count(occurrences, current_node)
-          break
-
-      # If we didn't find any useful suffixes, reset our node back to the root.
-      if not found:
-        current_node = self.root
+      current_node = self.get_longest_strict_suffix(current_node, letter)
+      if current_node != self.root:
+        self.count(occurrences, current_node)
     return occurrences
 
   def count(self, occurrences, current_node):
@@ -209,3 +158,9 @@ class TrieNode:
   def add_child(self, node):
     """Add the passed in node as a child to the current node."""
     self.children.add(node)
+
+  def get_child_with_value(self, value):
+    for child in self.children:
+      if child.value == value:
+        return child
+    return None

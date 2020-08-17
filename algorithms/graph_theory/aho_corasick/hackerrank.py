@@ -13,7 +13,8 @@ def time_it(title):
   print(f"{title} time: {time.time() - start_time}")
   start_time = time.time()
 
-def get_health(genes, health, first, last, d):
+
+def get_health(genes, health, first, last, d, trie):
     keywords = set()
     health_dict = collections.defaultdict(int)
     for i in range(first, last + 1):
@@ -21,33 +22,7 @@ def get_health(genes, health, first, last, d):
         keywords.add(gene)
         health_dict[gene] += health[i]
 
-    start_time = time.time()
-    sorted_words = sorted(keywords, key=lambda word: (len(word), word))
-    time_it("sort keywords")
-    trie = Trie()
-    time_it("trie init")
-    trie.parse_keywords(sorted_words)
-    time_it("parse words")
-
-    # Manual parse keywords
-    parent_edges = {}
-    child_edges = collections.defaultdict(set)
-    nodes = set()
-    for keyword in sorted_words:
-      nodes.add(keyword)
-      parent_edges[keyword] = keyword[:-1]
-      child_edges[keyword[:-1]].add(keyword)
-    time_it("manual parse")
-
-
-
-    trie.add_suffix_links()
-    time_it("suffix links")
-    trie.add_output_links()
-    time_it("output links")
-    start_time = time.time()
     occurrences = trie.get_occurrences(d)
-    print(f"get_occurrences: {time.time() - start_time}")
     # Score occurrences
     total_score = 0
     for gene, number in occurrences.items():
@@ -55,9 +30,8 @@ def get_health(genes, health, first, last, d):
     return total_score
 
 
-
-
 if __name__ == '__main__':
+    true_start = time.time()
     n = int(input())
 
     genes = input().rstrip().split()
@@ -68,6 +42,15 @@ if __name__ == '__main__':
 
     health_values = []
 
+    g = list(set(genes))
+
+    start_time = time.time()
+
+    trie = Trie()
+    time_it("trie2 init")
+    trie.construct(g)
+    time_it("total construction")
+
     for s_itr in range(s):
         firstLastd = input().split()
 
@@ -77,6 +60,7 @@ if __name__ == '__main__':
 
         d = firstLastd[2]
 
-        health_values.append(get_health(genes, health, first, last, d))
+        health_values.append(get_health(genes, health, first, last, d, trie))
 
     print(min(health_values), max(health_values))
+    print(f"GRAND TOTAL: {time.time() - true_start}")

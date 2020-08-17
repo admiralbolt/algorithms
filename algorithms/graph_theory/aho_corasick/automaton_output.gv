@@ -1,0 +1,69 @@
+digraph {
+	root [label=""]
+	a [label=a color=lightblue2 style=filled]
+	root -> a
+	a [label=a]
+	"" -> a
+	ab [label=b color=lightblue2 style=filled]
+	a -> ab
+	a [label=a]
+	aa [label=a]
+	a -> aa
+	aab [label=b color=lightblue2 style=filled]
+	aa -> aab
+	a [label=a]
+	aa [label=a]
+	aab [label=b]
+	aaba [label=a color=lightblue2 style=filled]
+	aab -> aaba
+	b [label=b]
+	root -> b
+	bc [label=c color=lightblue2 style=filled]
+	b -> bc
+	b [label=b]
+	"" -> b
+	bc [label=c]
+	bca [label=a color=lightblue2 style=filled]
+	bc -> bca
+	b [label=b]
+	ba [label=a]
+	b -> ba
+	baa [label=a color=lightblue2 style=filled]
+	ba -> baa
+	a [label=a]
+	aa [label=a color=lightblue2 style=filled]
+	a [label=a]
+	ab [label=b]
+	abc [label=c]
+	ab -> abc
+	abcd [label=d color=lightblue2 style=filled]
+	abc -> abcd
+	c [label=c color=lightblue2 style=filled]
+	root -> c
+	c [label=c]
+	"" -> c
+	cb [label=b color=lightblue2 style=filled]
+	c -> cb
+	c [label=c]
+	cb [label=b]
+	cbd [label=d color=lightblue2 style=filled]
+	cb -> cbd
+	aa -> a [color=blue constraint=false]
+	aab -> ab [color=blue constraint=false]
+	ab -> b [color=blue constraint=false]
+	abc -> bc [color=blue constraint=false]
+	bc -> c [color=blue constraint=false]
+	ba -> a [color=blue constraint=false]
+	baa -> aa [color=blue constraint=false]
+	bca -> a [color=blue constraint=false]
+	cb -> b [color=blue constraint=false]
+	aaba -> ba [color=blue constraint=false]
+	aa -> a [color=orange constraint=false]
+	aab -> ab [color=orange constraint=false]
+	abc -> bc [color=orange constraint=false]
+	baa -> aa [color=orange constraint=false]
+	bc -> c [color=orange constraint=false]
+	bca -> a [color=orange constraint=false]
+	ba -> a [color=orange constraint=false]
+	aaba -> a [color=orange constraint=false]
+}
