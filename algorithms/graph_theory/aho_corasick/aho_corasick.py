@@ -1,9 +1,6 @@
-
 """
 An implementation of the aho corasick automaton
 for string matching.
-All of this, for 50 hacker rank points.
-SMH
 """
 import collections
 
