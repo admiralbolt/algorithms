@@ -8,7 +8,7 @@ import time
 
 import cProfile
 
-from aho_corasick import *
+from aho_corasick_fast import *
 
 start_time = time.time()
 def time_it(title):
