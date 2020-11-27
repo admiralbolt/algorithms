@@ -9,7 +9,7 @@ I want to point out that this code was very nice looking at some point.
 And now it is garbage. Will probably try to cleanup the old version and do
 some performance improvements at some point.
 
-The amount of optimization required for it to work on hackerrank are ridiculous.
+The amount of optimizations required for it to work on hackerrank are ridiculous.
 """
 import collections
 import time
