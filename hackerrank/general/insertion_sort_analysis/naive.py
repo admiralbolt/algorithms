@@ -6,8 +6,10 @@ challenges. Sometimes, arrays may be too large for us to wait around for
 insertion sort to finish. Is there some other way we can calculate the number
 of shifts an insertion sort performs when sorting an array?
 
-The fastest way I can think of is just running insertion sort and counting
+The *fastest* way I can think of is just running insertion sort and counting
 the number of swaps that we do...
+
+By fastest I meant without having to think about it.
 """
 
 import random
@@ -20,16 +22,10 @@ def partial_sort(l, i):
     i -= 1
   return swaps
 
-def analyze_insertion_sort(l, debug=False):
+def analyze_insertion_sort_slow(l, debug=False):
   swaps = 0
   for i in range(1, len(l)):
     swaps += partial_sort(l, i)
     if debug:
       print(f"i: {i}, {l}, total_swaps: {swaps}")
   return l, swaps
-
-
-
-numbers = [random.randint(1, 10) for _ in range(5)]
-print(numbers)
-print(analyze_insertion_sort(numbers, debug=True))
