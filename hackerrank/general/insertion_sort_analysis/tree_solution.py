@@ -3,6 +3,9 @@ What we effectively need is a fast way of bisecting and inserting, which sounds
 suspciously like a tree to me. So we'll make a binary search tree and track
 some extra stuff to figure out how many swaps are necessary. This should reduce
 the complexity to O(nlog(n)) instead of n^2
+
+Except it's only nlog(n) if the tree is balanced. Which it isn't. Unless we
+balance it. Which I won't.
 """
 
 class Node:
