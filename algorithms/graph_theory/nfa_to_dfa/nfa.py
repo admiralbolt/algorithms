@@ -81,7 +81,11 @@ class NFA:
     d = Digraph()
     d.graph_attr["rankdir"] = "LR"
     for node in self.nodes:
-      d.node(str(node.number), str(node.number))
+      options = {}
+      if node == self.start or node == self.end:
+        options["style"] = "filled"
+        options["color"] = "lightblue2" if node == self.start else "red"
+      d.node(str(node.number), str(node.number), options)
 
     for source, edges in self.outgoing_edges.items():
       for edge in edges:
@@ -149,8 +153,14 @@ class NFA:
   def nfa_or(self, nfa):
     """Updates the current NFA to be a logical or of itself and the passed in nfa."""
     self.merge(nfa)
-    self.merge_node(self.start, nfa.start)
-    self.merge_node(self.end, nfa.end)
+    new_start = self.add_node()
+    self.add_edge(new_start, self.start, "epsilon")
+    self.add_edge(new_start, nfa.start, "epsilon")
+    self.start = new_start
+    new_end = self.add_node()
+    self.add_edge(self.end, new_end, "epsilon")
+    self.add_edge(nfa.end, new_end, "epsilon")
+    self.end = new_end
 
 
   def nfa_and(self, nfa):
@@ -163,35 +173,98 @@ class NFA:
   def star(self):
     """Allow the current NFA to match anynumber of times."""
     self.add_edge(self.end, self.start, "epsilon")
-    new_start = self.add_node()
-    new_end = self.add_node()
-    self.add_edge(new_start, new_end, "epsilon")
-    self.add_edge(new_start, self.start, "epsilon")
-    self.add_edge(self.end, new_end, "epsilon")
-    self.start = new_start
-    self.end = new_end
+    self.add_edge(self.start, self.end, "epsilon")
 
+def find_or_pos(regex):
+  unmatched = 0
+  for i, c in enumerate(regex):
+    if c == "(":
+      unmatched += 1
+    elif c == ")":
+      unmatched -= 1
+    elif c == "|" and unmatched == 0:
+      return i
+  return -1
+
+def find_split(regex):
+  """Finds the splitting point for an AB regex.
+
+  Assuming we have a regex that looks like
+  ({garbage})({garbage})
+
+  We find the position of the opening parenthesis of the second stanza.
+  """
+  unmatched = 1
+  for i, c in enumerate(regex):
+    if i == 0:
+      continue
+    if c == "(":
+      if unmatched == 0:
+        return i
+      unmatched += 1
+    elif c == ")":
+      unmatched -= 1
+  return -1
+
+
+def parse_regex(ticker, regex=""):
+  """Takes a regex as an input string and turns it into an nfa.
+
+  Our alphabet only contains (ab), and there are three operators allowed:
+  (R{1}R{2}) - Regex 2 should direclty follow regex 1.
+  (R{1}|R{2}) - Either match regex 1 or 2.
+  (R{1}*) - Match regex 1 0 or more times.
+
+  All operators are wrapped in parenthesis, no more than two values can be
+  inside a single set of parenthesis including stars. Some valid example:
+
+  ((a*)|(ab))
+  ((ab)*)
+
+  The actual logic will be recursive, and will strip off parens and call the
+  appropriate nfa logic based on the operator of the resulting expression.
+  """
+  if len(regex) == 1:
+    n = NFA(ticker)
+    n.from_a(regex)
+    return n
+
+  # Pop some parens
+  regex = regex[1:-1]
+  # If the last char is a star, apply the star operator to the result of the
+  # NFA construction ofo the first bit.
+  if regex[-1] == "*":
+    n = parse_regex(ticker, regex=regex[:-1])
+    n.star()
+    return n
+
+  # If there is a pipe operator not contained within parethensis, run or.
+  pos = find_or_pos(regex)
+  if pos != -1:
+    n = parse_regex(ticker, regex=regex[:pos])
+    q = parse_regex(ticker, regex=regex[pos + 1:])
+    n.nfa_or(q)
+    return n
+
+  # If we get here, it must be R1 -> R2. First we check for our base case
+  # here which is len == 2 i.e. either ab or ba.
+  if len(regex) == 2:
+    n = NFA(ticker)
+    n.from_a(regex[0])
+    q = NFA(ticker)
+    q.from_a(regex[1])
+    n.nfa_and(q)
+    return n
+
+  # Otherwise we need to find where to split by. We use similar logic
+  split = find_split(regex)
+  n = parse_regex(ticker, regex=regex[:split])
+  q = parse_regex(ticker, regex=regex[split:])
+  n.nfa_and(q)
+  return n
 
 
 if __name__ == "__main__":
   ticker = Ticker()
-  a = NFA(ticker)
-  a.from_a("a")
-
-  b = NFA(ticker)
-  b.from_a("b")
-
-  a.nfa_and(b)
-  a.render("ab.gv")
-
-  s = NFA(ticker)
-  s.from_a("a")
-  s.render("a.gv")
-  s.star()
-  s.render("star.gv")
-
-  a.nfa_or(s)
-  a.render("or.gv")
-
-  a.star()
-  a.render("orstar.gv")
+  nfa = parse_regex(ticker, "((ab)|((b|a)(b*)))")
+  nfa.render("regex.gv")
